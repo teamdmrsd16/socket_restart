@@ -17,6 +17,7 @@ def monitor():
     # ping through socket inside while loop
     print 'monitor running'
     global pid
+    global pro
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.connect((HOST, PORT))
     data = s.recv(1024)
@@ -49,13 +50,16 @@ def monitor():
                 data = s.recv(1024)
                 print ("Received", data)
 
-                os.killpg(os.getpgid(pid), signal.SIGTERM)  # Send the signal to all the process groups
+                subprocess.Popen("rosnode kill /move_group /robot_state_publisher /rosout      /tf2_buffer_server /ur_driver", shell=True) 
+                time.sleep(2)
+                os.killpg(os.getpgid(pid), signal.SIGTERM)
                 time.sleep(2)
                 Thread(target = connection_thread).start()
 
 def connection_thread():
     print 'Working'
     global pid
+    global pro
     # The os.setsid() is passed in the argument preexec_fn so
     # it's run after the fork() and before  exec() to run the shell.
     pro = subprocess.Popen(
